@@ -13,6 +13,7 @@ description: |
   An open-source Switch emulator, forked from the Yuzu emulator
 grade: stable
 confinement: strict
+compression: lzo
 
 apps:
   eden-emulator:
