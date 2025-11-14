@@ -1,0 +1,144 @@
+name: eden-emulator
+base: core24
+version: '0.0.4-rc2'
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+  arm64:
+    build-on: [arm64]
+    build-for: [arm64]
+summary: Eden, Switch Emulator
+description: |
+  An open-source Switch emulator, forked from the Yuzu emulator
+grade: stable
+confinement: strict
+
+apps:
+  eden-emulator:
+    command-chain:
+      - snap/command-chain/gpu-2404-wrapper
+      - snap/command-chain/desktop-launch6
+    command: usr/bin/eden
+    desktop: usr/share/applications/dev.eden_emu.eden.desktop
+    common-id: dev.eden_emu.eden
+    environment:
+      SNAP_DESKTOP_RUNTIME: $SNAP/kf6
+      GTK_USE_PORTAL: "1"
+      QT_VERSION: "6"
+      LD_LIBRARY_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
+      QT_PLUGIN_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
+    plugs:
+      - desktop
+      - desktop-legacy
+      - unity7
+      - opengl
+      - wayland
+      - x11
+      - screen-inhibit-control
+      - audio-playback
+      - network
+      - network-bind
+      - home
+      - removable-media
+      - mount-observe
+      - joystick
+      - bluez
+      - udisks2
+
+plugs:
+  desktop:
+    mount-host-font-cache: false
+  gtk-2-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
+  kf6-core24:
+    content: kf6-core24-all
+    interface: content
+    target: $SNAP/kf6
+    default-provider: kf6-core24
+  gpu-2404:
+    interface: content
+    target: $SNAP/gpu-2404
+    default-provider: mesa-2404
+  shared-memory:
+    private: true
+  lxqt-support:
+    content: lxqt-support
+    interface: content
+    target: $SNAP/lxqt-support
+    default-provider: lxqt-support
+
+layout:
+  /usr/share/X11:
+    symlink: $SNAP/kf6/usr/share/X11
+  /usr/share/qt6:
+    symlink: $SNAP/kf6/usr/share/qt6
+  /usr/share/libdrm:
+    bind: $SNAP/gpu-2404/libdrm
+  /usr/share/drirc.d:
+    symlink: $SNAP/gpu-2404/drirc.d
+  /etc/fonts:
+    bind: $SNAP/etc/fonts
+
+parts:
+  eden-emulator-app:
+    plugin: dump
+    source:
+      - on amd64: https://github.com/eden-emulator/Releases/releases/download/v$SNAPCRAFT_PROJECT_VERSION/Eden-Ubuntu-24.04-v$SNAPCRAFT_PROJECT_VERSION-amd64.deb
+      - on arm64: https://github.com/eden-emulator/Releases/releases/download/v$SNAPCRAFT_PROJECT_VERSION/Eden-Ubuntu-24.04-v$SNAPCRAFT_PROJECT_VERSION-aarch64.deb
+    override-build: |
+      mkdir -p $CRAFT_PART_INSTALL/
+      mv -f usr $CRAFT_PART_INSTALL/
+      sed -i 's|Name=Eden|Name=Eden [NyKyu]|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+      sed -i 's|Icon=dev.eden_emu.eden|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/dev.eden_emu.eden.svg|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+      sed -i 's|TryExec=eden|TryExec=${SNAP}/usr/bin/eden|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+      sed -i 's|Exec=eden %f|Exec=${SNAP}/usr/bin/eden %f|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+
+  dependencies:
+    after: [eden-emulator-app]
+    plugin: nil
+    stage-packages:
+      - libsdl2-2.0-0
+      - libzydis4.0t64
+      - libcpp-httplib0.14t64
+      - libcubeb0
+      - libdiscord-rpc3
+      - libenet7
+      - libquazip1-qt6-1t64
+      - libsimpleini1t64
+      - libdecor-0-0
+      - libjack0
+    prime:
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libSDL2-2.0.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libZydis.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcpp-httplib.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcubeb.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdiscord-rpc.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libenet.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libquazip1-qt6.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsimpleini.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdecor-0.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjack.so*
+
+  command-chain:
+    after: [dependencies]
+    plugin: nil
+    source: ./launcher
+    override-build: |
+      mkdir -p $CRAFT_PART_INSTALL/snap
+      cp -r command-chain $CRAFT_PART_INSTALL/snap/
+      chmod 777 $CRAFT_PART_INSTALL/snap/command-chain/*
