@@ -27,6 +27,7 @@ apps:
       SNAP_DESKTOP_RUNTIME: $SNAP/kf6
       GTK_USE_PORTAL: "1"
       QT_VERSION: "6"
+      QT_QPA_PLATFORM: xcb
       LD_LIBRARY_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
       QT_PLUGIN_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
     plugs:
