@@ -1,6 +1,6 @@
 name: eden-emulator
 base: core24
-version: '0.0.4-rc2'
+version: '0.0.4-rc3'
 platforms:
   amd64:
     build-on: [amd64]
