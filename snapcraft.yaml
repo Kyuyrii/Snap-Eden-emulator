@@ -125,6 +125,7 @@ parts:
       - libsimpleini1t64
       - libdecor-0-0
       - libjack0
+      - libfmt9
     prime:
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libSDL2-2.0.so*
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libZydis.so*
@@ -136,6 +137,7 @@ parts:
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsimpleini.so*
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdecor-0.so*
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjack.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfmt.so*
 
   command-chain:
     after: [dependencies]
