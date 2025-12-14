@@ -96,6 +96,10 @@ layout:
     symlink: $SNAP/gpu-2404/drirc.d
   /etc/fonts:
     bind: $SNAP/etc/fonts
+  /usr/share/color-schemes:
+    symlink: $SNAP/lxqt-support/usr/share/color-schemes
+  /usr/share/Kvantum:
+    symlink: $SNAP/lxqt-support/usr/share/Kvantum
 
 parts:
   eden-emulator-app:
