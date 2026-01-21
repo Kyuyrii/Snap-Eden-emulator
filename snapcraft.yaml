@@ -17,7 +17,7 @@ compression: lzo
 
 apps:
   eden-emulator:
-    command-chain: [snap/command-chain/unset-qt_qpa_platform]
+    command-chain: [desktop-launch-eden]
     command: usr/bin/eden
     desktop: usr/share/applications/dev.eden_emu.eden.desktop
     common-id: dev.eden_emu.eden
@@ -31,6 +31,7 @@ apps:
       - home
       - removable-media
       - mount-observe
+      - system-observe
       - joystick
       - bluez
       - udisks2
@@ -58,7 +59,7 @@ parts:
       - on arm64: https://github.com/eden-emulator/Releases/releases/download/v$SNAPCRAFT_PROJECT_VERSION/Eden-Ubuntu-24.04-v$SNAPCRAFT_PROJECT_VERSION-aarch64.deb
     override-build: |
       craftctl default
-      sed -i 's|Name=Eden|Name=Eden [NyKyu]|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+      sed -i 's|Name=Eden|Name=Eden [Kyu]|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
       sed -i 's|Icon=dev.eden_emu.eden|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/dev.eden_emu.eden.svg|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
 
   dependencies:
@@ -89,9 +90,9 @@ parts:
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjack.so*
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfmt.so*
 
-  command-chain:
+  other-files:
     after: [dependencies]
     plugin: dump
-    source: ./command-chain/
-    organize:
-      unset-qt_qpa_platform: snap/command-chain/unset-qt_qpa_platform
+    source: ./other-files
+    prime:
+      - desktop-launch-eden

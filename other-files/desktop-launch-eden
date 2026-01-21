@@ -1,0 +1,23 @@
+#!/bin/bash
+
+unset QT_QPA_PLATFORM
+
+export XDG_CONFIG_HOME="$SNAP_USER_COMMON/.config"
+export XDG_DATA_HOME="$SNAP_USER_COMMON/.local/share"
+export XDG_CACHE_HOME="$SNAP_USER_COMMON/.cache"
+
+mkdir -p "$XDG_CONFIG_HOME"
+mkdir -p "$XDG_DATA_HOME"
+mkdir -p "$XDG_CACHE_HOME"
+
+if [ -d "$SNAP_USER_DATA/.config/eden" ]; then
+    cp -r "$SNAP_USER_DATA/.config/eden" "$SNAP_USER_COMMON/.config/"
+    rm -rf "$SNAP_USER_DATA/.config/eden"
+fi
+
+if [ -d "$SNAP_USER_DATA/.local/share/eden" ]; then
+    cp -r "$SNAP_USER_DATA/.local/share/eden" "$SNAP_USER_COMMON/.local/share/"
+    rm -rf "$SNAP_USER_DATA/.local/share/eden"
+fi
+
+exec "$@"
