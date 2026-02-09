@@ -23,8 +23,8 @@ apps:
     common-id: dev.eden_emu.eden
     environment:
       QT_QPA_PLATFORMTHEME: xdgdesktopportal
-      LD_LIBRARY_PATH: $SNAP/lxqt-support-core24/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
-      QT_PLUGIN_PATH: $SNAP/lxqt-support-core24/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
+      LD_LIBRARY_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
+      QT_PLUGIN_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
     extensions: [kde-neon-6]
     plugs:
       - screen-inhibit-control
@@ -42,14 +42,12 @@ plugs:
   lxqt-support-core24:
     content: lxqt-support-core24
     interface: content
-    target: $SNAP/lxqt-support-core24
+    target: $SNAP/lxqt-support
     default-provider: lxqt-support-core24
 
 layout:
-  /usr/share/color-schemes:
-    symlink: $SNAP/lxqt-support-core24/usr/share/color-schemes
   /usr/share/Kvantum:
-    symlink: $SNAP/lxqt-support-core24/usr/share/Kvantum
+    symlink: $SNAP/lxqt-support /usr/share/Kvantum
 
 parts:
   eden-emulator-app:
@@ -61,6 +59,7 @@ parts:
       craftctl default
       sed -i 's|Name=Eden|Name=Eden [Kyu]|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
       sed -i 's|Icon=dev.eden_emu.eden|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/dev.eden_emu.eden.svg|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+      sed -i 's|StartupWMClass=eden|StartupWMClass=dev.eden_emu.eden|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
 
   dependencies:
     after: [eden-emulator-app]
