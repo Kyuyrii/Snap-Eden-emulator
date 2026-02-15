@@ -1,6 +1,6 @@
 name: eden-emulator
 base: core24
-version: '0.1.1'
+version: '0.2.0-rc1'
 platforms:
   amd64:
     build-on: [amd64]
@@ -47,7 +47,7 @@ plugs:
 
 layout:
   /usr/share/Kvantum:
-    symlink: $SNAP/lxqt-support /usr/share/Kvantum
+    symlink: $SNAP/lxqt-support/usr/share/Kvantum
 
 parts:
   eden-emulator-app:
