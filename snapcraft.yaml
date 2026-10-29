@@ -77,11 +77,9 @@ parts:
       - -Dzstd_FORCE_BUNDLED=ON
     override-build: |
       craftctl default
-      desktop-file-edit \
-        --set-key="Icon" --set-value="Eden [Kyu]" \
-        --set-key="Icon" --set-value="${SNAP}/usr/share/icons/hicolor/scalable/apps/dev.eden_emu.eden.svg" \
-        --set-key="StartupWMClass" --set-value="dev.eden_emu.eden" \
-        $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+      sed -i 's|Name=Eden|Name=Eden [Kyu]|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+      sed -i 's|Icon=dev.eden_emu.eden|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/dev.eden_emu.eden.svg|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+      sed -i 's|StartupWMClass=eden|StartupWMClass=dev.eden_emu.eden|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
 
   dependencies:
     after: [eden-emulator-app]
