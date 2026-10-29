@@ -23,8 +23,6 @@ apps:
     common-id: dev.eden_emu.eden
     environment:
       QT_QPA_PLATFORMTHEME: xdgdesktopportal
-      LD_LIBRARY_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
-      QT_PLUGIN_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
     extensions: [kde-neon-6]
     plugs:
       - screen-inhibit-control
@@ -42,45 +40,58 @@ plugs:
 
 parts:
   eden-emulator-app:
-    plugin: dump
-    source:
-      - on amd64: https://git.eden-emu.dev/eden-emu/eden/releases/download/v$SNAPCRAFT_PROJECT_VERSION/Eden-Ubuntu-24.04-v$SNAPCRAFT_PROJECT_VERSION-amd64.deb
-      - on arm64: https://git.eden-emu.dev/eden-emu/eden/releases/download/v$SNAPCRAFT_PROJECT_VERSION/Eden-Ubuntu-24.04-v$SNAPCRAFT_PROJECT_VERSION-aarch64.deb
+    plugin: cmake
+    source: https://git.eden-emu.dev/eden-emu/eden.git
+    source-tag: v$SNAPCRAFT_PROJECT_VERSION
+    build-packages:
+      - libssl-dev
+      - pkg-config
+      - libsdl2-dev
+      - libavfilter-dev
+      - libavcodec-dev
+      - libswscale-dev
+      - rapidjson-dev
+      - libusb-1.0-0-dev
+      - libbrotli-dev
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DBUILD_TESTING=OFF
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DYUZU_USE_BUNDLED_QT=OFF
+      - -DYUZU_USE_QT_MULTIMEDIA=OFF
+      - -DYUZU_USE_QT_WEB_ENGINE=OFF
+      - -DENABLE_QT_TRANSLATION=ON
+      - -DENABLE_UPDATE_CHECKER=OFF
+      - -DUSE_DISCORD_PRESENCE=ON
+      - -DENABLE_LTO=ON
+      - -DYUZU_USE_BUNDLED_SIRIT=OFF
+      - -DYUZU_USE_BUNDLED_FFMPEG=OFF
+      - -DYUZU_USE_BUNDLED_OPENSSL=OFF
+      - -DYUZU_DISABLE_LLVM=ON
+      - -DYUZU_STATIC_BUILD=OFF
+      - -DYUZU_CMD=OFF
+      - -DYUZU_ROOM_STANDALONE=OFF
+      - -DNIGHTLY_BUILD=OFF
+      - -DYUZU_USE_BUNDLED_SDL2=OFF
+      - -DVulkanHeaders_FORCE_BUNDLED=ON
+      - -Dzstd_FORCE_BUNDLED=ON
     override-build: |
       craftctl default
-      sed -i 's|Name=Eden|Name=Eden [Kyu]|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
-      sed -i 's|Icon=dev.eden_emu.eden|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/dev.eden_emu.eden.svg|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
-      sed -i 's|StartupWMClass=eden|StartupWMClass=dev.eden_emu.eden|' $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
+      desktop-file-edit \
+        --set-key="Icon" --set-value="Eden [Kyu]" \
+        --set-key="Icon" --set-value="${SNAP}/usr/share/icons/hicolor/scalable/apps/dev.eden_emu.eden.svg" \
+        --set-key="StartupWMClass" --set-value="dev.eden_emu.eden" \
+        $CRAFT_PART_INSTALL/usr/share/applications/dev.eden_emu.eden.desktop
 
   dependencies:
     after: [eden-emulator-app]
     plugin: nil
     stage-packages:
       - libsdl2-2.0-0
-      - libzydis4.0t64
-      - libcpp-httplib0.14t64
-      - libcubeb0
-      - libdiscord-rpc3
-      - libenet7
-      - libquazip1-qt6-1t64
-      - libsimpleini1t64
       - libdecor-0-0
-      - libjack0
-      - libfmt9
-      - libboost-context1.83.0
     prime:
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libSDL2-2.0.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libZydis.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcpp-httplib.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcubeb.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdiscord-rpc.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libenet.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libquazip1-qt6.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsimpleini.so*
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdecor-0.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjack.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfmt.so*
-      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libboost_context.so*
 
   other-files:
     after: [dependencies]
